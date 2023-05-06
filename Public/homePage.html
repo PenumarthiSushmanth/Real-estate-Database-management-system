@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+
+    <!-- Boot strap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <style>
+        #homebody{
+            font-family: 'Times New Roman', Times, serif;
+            background-color: whitesmoke;
+        }
+        .shadow{
+            box-shadow: 5px 5px 10px 2px rgba(0,0,0,0.3);
+        }
+        .scrollable {
+            height: 720px; 
+            overflow-y: scroll;
+        }
+    </style>
+
+    <script>
+        var data;
+        function bodyLoad()
+        {
+            data = JSON.parse(localStorage.getItem("userdata"))
+            if (data == null) {
+                location.href = "./loginPage.html"
+            } else {
+                // console.log(data)
+                var today = new Date();
+                var time = today.getHours();
+                var salstr = ""
+                if (time >= 0 && time < 12) {
+                    salstr = "Good morning ";
+                } else if (time >= 12 && time <= 15) {
+                    salstr = "Good Afternoon ";
+                } else {
+                    salstr = "Good Evening ";
+                }
+                $("#name").text(salstr + data.first_name)
+
+                if(data.user_type == "Agent")
+                {
+                    $("#prop_otp").show()
+                    $("#bookings").hide()
+                    $("#Payments").hide()
+
+                }else
+                {
+                    $("#prop_otp").hide()
+                    $("#bookings").show()
+                    $("#Payments").show()
+                }
+
+                $.ajax({
+                    method: "GET",
+                    url: "/getAllProperties",
+                    success: function (response) {
+                        var propData = response.data;
+                        loadData(propData)
+                        // console.log(propData)
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+            }
+        }
+
+        function loadData(propData)
+        {
+            $('#itemBody').html("")
+            for (var item of propData) 
+                        {
+                            var addstr = item.unit_number + " " + item.street_number + " " + item.street_name + ", " + item.city + ", " + item.country + " - " + item.zipcode;
+                            var cost="";
+
+                            if(item.property_listing_type == "rent")
+                                {
+                                    cost = `<h5 class="mt-4">For Rent</h5>
+                                            <h4>$ ${item.rental_price}</h4>`
+                                }else if (item.property_listing_type == "sale")
+                                {
+                                    cost = `<h5 class="mt-4">For Sale</h5>
+                                            <h4>$ ${item.sale_price}</h4>`
+                                }else{
+                                    cost = `<h5 class="mt-4">Rent & Sale</h5>
+                                            <h4>Rent: $ ${item.rental_price}</h4>
+                                            <h4>Sale: $ ${item.sale_price}</h4>`
+                                            
+                                }
+
+                                var date = item.availability_date;
+                                var fin_date = date.substring(0,10);
+
+                            if(item.property_type == "House")
+                            {
+                                var isPark = "";
+                                if(item.parking)
+                                {
+                                    isPark = "<p>parking ✅ </p>";
+                                }
+
+                                $(`#itemBody`).append(`
+                                <div class="shadow row p-2 rounded rounded-3 bg-white my-3">
+                                    <div class="col-2 text-center">
+                                        <h5>ID</h5>
+                                        <h3>${item.h_id}</h3>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="ms-3">
+                                            <h4>${item.property_type} - ${item.no_of_hou_bedrooms} bed / ${item.no_of_hou_bathrooms} bath</h4>
+                                            <p>${addstr}</p>
+                                            ${isPark}
+                                            <p>Carpet area: ${item.hou_carpet_area}</p>
+                                            <h5>Available from: ${fin_date}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        ${cost}
+                                        <div id="renter_view_${item.h_id}">
+                                        <button id = "${item.h_id}" onclick="addToCart(this)" data-bs-toggle="modal" data-bs-target="#cartModal" class="btn btn-success w-100">Book</button>
+                                        </div>
+
+                                        <div id = "agent_view_${item.h_id}">
+                                        <button id = "${item.h_id}" name = "House" onclick="deleteProperty(this.id, this.name)" class="btn btn-danger w-100">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                `)
+                                if(data.user_type == "Agent")
+                            {
+                                $(`#agent_view_${item.h_id}`).show()
+                                $(`#renter_view_${item.h_id}`).hide()
+                            }else
+                            {
+                                $(`#renter_view_${item.h_id}`).show()
+                                $(`#agent_view_${item.h_id}`).hide()
+                            }
+                            } 
+                            else if(item.property_type == "Apartment")
+                            {
+                                var islaund = "";
+                                if(item.laundry_availability)
+                                {
+                                    islaund = "<p>laundry ✅ </p>";
+                                }
+
+                                $(`#itemBody`).append(`
+                                <div class="shadow row p-2 rounded rounded-2 bg-white my-3">
+                            <div class="col-2 text-center">
+                                <h5>ID</h5>
+                                <h3>${item.a_id}</h3>
+                            </div>
+                            <div class="col-8">
+                                <h4>Apartment - ${item.no_of_bedrooms} bed / ${item.no_of_bathrooms} bath (${item.building_type})</h4>
+                                <p>${addstr}</p>
+                                ${islaund}
+                                <p>Carpet area: ${item.carpet_area}</p>
+                                <h5>Available from: ${fin_date}</h5>
+                            </div>
+                            <div class="col-2 text-center">
+                                ${cost}
+                                <div id="renter_view_${item.a_id}">
+                                    <button id="${item.a_id}" onclick="addToCart(this)" data-bs-toggle="modal" data-bs-target="#cartModal" class="btn btn-success w-100">Book</button>
+                                        </div>
+
+                                        <div id = "agent_view_${item.a_id}">
+                                        <button id = "${item.a_id}" name="Apartment" onclick="deleteProperty(this.id, this.name)" class="btn btn-danger w-100">Remove</button>
+                                        </div>
+                            </div>
+                        </div>
+                                `)
+                                if(data.user_type == "Agent")
+                            {
+                                $(`#agent_view_${item.a_id}`).show()
+                                $(`#renter_view_${item.a_id}`).hide()
+                            }else
+                            {
+                                $(`#renter_view_${item.a_id}`).show()
+                                $(`#agent_view_${item.a_id}`).hide()
+                            }
+                            }
+                            else
+                            {
+                                var isfire = "";
+                                var isbuglar = "";
+                                
+                                if(item.fire_alarm)
+                                {
+                                    isfire = "<p>fire alarm ✅ </p>";
+                                }
+                                if(item.burglar_alarm)
+                                {
+                                    isbuglar = "<p>buglar alarm ✅ </p>";
+                                }
+
+                                $(`#itemBody`).append(`
+                                <div class="shadow row p-2 rounded rounded-2 bg-white my-3">
+                            <div class="col-2 text-center">
+                                <h5>ID</h5>
+                                <h3>${item.c_id}</h3>
+                            </div>
+                            <div class="col-8">
+                                <h4>Commerial building - (${item.types_of_business})</h4>
+                                <p>${addstr}</p>
+                                ${isfire}
+                                ${isbuglar}
+                                <p>No. of Camera: ${item.no_of_cameras}</p>
+                                <h5>Available from: ${fin_date}</h5>
+                            </div>
+                            <div class="col-2 text-center">
+                                ${cost}
+                                <div id="renter_view_${item.c_id}">
+                                    <button id="${item.c_id}" onclick="addToCart(this)" data-bs-toggle="modal" data-bs-target="#cartModal" class="btn btn-success w-100">Book</button>
+                                        </div>
+
+                                        <div id = "agent_view_${item.c_id}">
+                                        <button id = "${item.c_id}" name = "Commercial building" onclick="deleteProperty(this.id, this.name)" class="btn btn-danger w-100">Remove</button>
+                                        </div>
+                            </div>
+                        </div>
+                                `)
+                                if(data.user_type == "Agent")
+                            {
+                                $(`#agent_view_${item.c_id}`).show()
+                                $(`#renter_view_${item.c_id}`).hide()
+                            }else
+                            {
+                                $(`#renter_view_${item.c_id}`).show()
+                                $(`#agent_view_${item.c_id}`).hide()
+                            }
+                            }
+                        
+                        
+                        }
+        }
+
+
+        function addToCart(obj)
+        {
+            loadCreditCards();
+
+            var id = obj.id
+            var formdata = {}
+            
+                formdata = {
+                            "prop_id" : id,
+                            "prop_type" : null,
+                            "ava_date" : null,
+                            "prop_list_type" : null,
+                            "location" : null,
+                            "min_budget" : null,
+                            "max_budget" : null
+                            }
+
+                $.ajax({
+                    method: "POST",
+                    url: "/getFilteredProperty",
+                    data: JSON.stringify(formdata),
+                    contentType: "application/json",
+                    success: function (response) {
+                        var resData = response.data;
+                        // console.log(resData)
+                        loadCart(resData);
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+        }
+
+        
+        function loadCreditCards()
+        {
+            $.ajax({
+                    method: "GET",
+                    url: `/getCreditCard/${data.user_id}`,
+                    success: function (response) {
+                        var cardData = response.data;
+                        // console.log(cardData)
+                        $('#cardlst').html("")
+                        for(var item of cardData)
+                        {
+                            $('#cardlst').append(`
+                            <option value="${item.credit_card_number}">${item.credit_card_number}</option>
+                            `)
+                        }
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+        }
+        
+        
+        var bookingLst = {}
+
+        function loadCart(resData)
+        {
+            bookingLst = resData;
+
+            console.log(bookingLst)
+
+            $('#cartbody').html("")
+            for (var item of resData) 
+                        {
+                            var addstr = item.unit_number + " " + item.street_number + " " + item.street_name + ", " + item.city + ", " + item.country + " - " + item.zipcode;
+                            var cost="";
+
+                            if(item.property_listing_type == "rent")
+                                {
+                                    cost = `<h5 class="mt-4">For Rent</h5>
+                                            <h4>$ ${item.rental_price}</h4>`
+                                }else if (item.property_listing_type == "sale")
+                                {
+                                    cost = `<h5 class="mt-4">For Sale</h5>
+                                            <h4>$ ${item.sale_price}</h4>`
+                                }else{
+                                    cost = `<h5 class="mt-4">Rent & Sale</h5>
+                                            <h4>Rent: $ ${item.rental_price}</h4>
+                                            <h4>Sale: $ ${item.sale_price}</h4>`
+                                            
+                                }
+
+                                var date = item.availability_date;
+                                var fin_date = date.substring(0,10);
+
+                            if(item.property_type == "House")
+                            {
+                                var isPark = "";
+                                if(item.parking)
+                                {
+                                    isPark = "<p>parking ✅ </p>";
+                                }
+
+                                $(`#cartbody`).append(`
+                                <div class="row p-2 rounded rounded-3 bg-white my-3">
+                                    <div class="col-2 text-center">
+                                        <h5>ID</h5>
+                                        <h3>${item.h_id}</h3>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="ms-3">
+                                            <h4>${item.property_type} - ${item.no_of_hou_bedrooms} bed / ${item.no_of_hou_bathrooms} bath</h4>
+                                            <p>${addstr}</p>
+                                            ${isPark}
+                                            <p>Carpet area: ${item.hou_carpet_area}</p>
+                                            <h5>Available from: ${fin_date}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        ${cost}
+                                    </div>
+                                </div>
+                                `)
+                            } 
+                            else if(item.property_type == "Apartment")
+                            {
+                                var islaund = "";
+                                if(item.laundry_availability)
+                                {
+                                    islaund = "<p>laundry ✅ </p>";
+                                }
+
+                                $(`#cartbody`).append(`
+                                <div class="row p-2 rounded rounded-2 bg-white my-3">
+                            <div class="col-2 text-center">
+                                <h5>ID</h5>
+                                <h3>${item.a_id}</h3>
+                            </div>
+                            <div class="col-8">
+                                <h4>Apartment - ${item.no_of_bedrooms} bed / ${item.no_of_hou_bathrooms} bath (${item.building_type})</h4>
+                                <p>${addstr}</p>
+                                ${islaund}
+                                <p>Carpet area: ${item.carpet_area}</p>
+                                <h5>Available from: ${fin_date}</h5>
+                            </div>
+                            <div class="col-2 text-center">
+                                ${cost}
+                            </div>
+                        </div>
+                                `)
+                            }
+                            else
+                            {
+                                var isfire = "";
+                                var isbuglar = "";
+                                
+                                if(item.fire_alarm)
+                                {
+                                    isfire = "<p>fire alarm ✅ </p>";
+                                }
+                                if(item.burglar_alarm)
+                                {
+                                    isbuglar = "<p>buglar alarm ✅ </p>";
+                                }
+
+                                $(`#cartbody`).append(`
+                                <div class="row p-2 rounded rounded-2 bg-white my-3">
+                            <div class="col-2 text-center">
+                                <h5>ID</h5>
+                                <h3>${item.c_id}</h3>
+                            </div>
+                            <div class="col-8">
+                                <h4>Commerial building - (${item.types_of_business})</h4>
+                                <p>${addstr}</p>
+                                ${isfire}
+                                ${isbuglar}
+                                <p>No. of Camera: ${item.no_of_cameras}</p>
+                                <h5>Available from: ${fin_date}</h5>
+                            </div>
+                            <div class="col-2 text-center">
+                                ${cost}
+                            </div>
+                        </div>
+                                `)
+                            }
+                        }
+
+        }
+
+
+        function postOrders()
+        {
+            var flag = true;
+            var start_date = $('#start_date').val()
+            var end_date = $('#end_date').val()
+            var rent_period = $('#rent_period').val()
+            var cardlst = $('#cardlst').val()
+            var prop_id = "";
+            if(bookingLst[0].property_type == "House")
+            {
+                prop_id = bookingLst[0].h_id;
+            }else if (bookingLst[0].property_type == "Apartment")
+            {
+                prop_id = bookingLst[0].a_id;
+            }else
+            {
+                prop_id = bookingLst[0].c_id;
+            }
+
+            var fin_address = bookingLst[0].unit_number + " " + bookingLst[0].street_number + " " + bookingLst[0].street_name + ", " + bookingLst[0].city + ", " + bookingLst[0].country + " - " + bookingLst[0].zipcode; 
+            var user_id = data.user_id;
+
+            if(start_date == "" || end_date == "" || rent_period == "" || cardlst == "" || prop_id == "" || user_id == "")
+            {
+                alert("Please enter all the given fields!")
+                flag = false;
+            }
+
+            const date1 = new Date(start_date);
+            const date2 = new Date(end_date);
+
+            if (date1 > date2) {
+                alert("Start date cannot be after End date!")
+                flag=false;
+            }
+            var formdata;
+            if(flag)
+            {
+                formdata = {
+                    "start_date" : start_date,
+                    "end_date" : end_date,
+                    "rental_period" : rent_period,
+                    "cc_num" : cardlst,
+                    "prop_id" : prop_id,
+                    "prop_type" : bookingLst[0].property_type,
+                    "prop_address" : fin_address,
+                    "user_id" : user_id 
+                }
+                // console.log(formdata)
+                $.ajax({
+                        type: "POST",
+                        url: "/addToCart",
+                        data: JSON.stringify(formdata),
+                        contentType: "application/json",
+                        success: function(response){
+                            deleteProperty(prop_id, bookingLst[0].property_type);
+                            alert("Booking Confirmed!")
+
+                        },
+                        error: function(error)
+                        {
+                            alert("Something went wrong...")
+                        }
+                    })
+            }
+
+        }
+
+
+        function deleteProperty(prop_id, prop_type)
+        {
+            // console.log(prop_id, prop_type)
+            $.ajax({
+                    method: "DELETE",
+                    url: `/deleteProperty/${prop_id}/${prop_type}`,
+                    success: function (response) {
+                       bodyLoad();
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+        }
+
+        function loadBookings()
+        {
+            $.ajax({
+                    method: "GET",
+                    url: `/getBookings/${data.user_id}`,
+                    success: function (response) {
+                        var bookData = response.data;
+                        console.log(bookData)
+                        $('#bookingBody').html('')
+                        for(var item of bookData)
+                        {
+                            var st_date = item.start_date.substring(0,10)
+                            var en_date = item.end_date.substring(0,10)
+                            
+                            $('#bookingBody').append(`
+                        <div class="row p-2 rounded rounded-3 my-3">
+                        <div class="col-2 text-center">
+                            <h5>ID</h5>
+                            <h3>${item.booking_id}</h3>
+                        </div>
+                        <div class="col-10">
+                            <div class="ms-3">
+                                <h4>${item.property_type} (ID - ${item.property_id})</h4>
+                                <p>${item.property_address}</p>
+                                <p>Staring from ${st_date} to ${en_date}</p>
+                                <p>Rental period: ${item.rental_period}</p>
+                                <p>Payment done by Card: ${item.credit_card_number}</p>
+                            </div>
+                        </div>
+                    </div>
+                        `)
+                        }
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+        }
+
+        function SearchByID()
+        {
+            var id = $('#prop_id').val()
+            var formdata = {}
+            if(id == "")
+            {
+                alert("Please enter any ID")
+            }else
+            {
+                formdata = {
+                            "prop_id" : id,
+                            "prop_type" : null,
+                            "ava_date" : null,
+                            "prop_list_type" : null,
+                            "location" : null,
+                            "min_budget" : null,
+                            "max_budget" : null
+                            }
+
+                $.ajax({
+                    method: "POST",
+                    url: "/getFilteredProperty",
+                    data: JSON.stringify(formdata),
+                    contentType: "application/json",
+                    success: function (response) {
+                        var resData = response.data;
+                        if(resData.length == 0)
+                        {
+                            $('#itemBody').html(`<h2 class="text-center mt-3">No Property found on this ID</h2>`)
+                        }else
+                        {
+                            loadData(resData)
+                        }
+                        // console.log(resData)
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+            }
+
+        }
+
+        function SearchByFilter()
+        {
+            var prop_type = $('#prop_type').val()
+            var a_date = $('#date').val()
+            var sell_type = $('#sell_type').val()
+            var loc = $('#loc').val()
+            var min_budget = $('#min_budget').val()
+            var max_budget = $('#max_budget').val()
+            
+            var dflag = bugflag = maxflag = true;
+
+            if(a_date == "")
+            {
+                a_date = null;
+            }
+            if(prop_type == "all")
+            {
+                prop_type = null;
+            }
+            if(loc == "all")
+            {
+                loc = null;
+            }
+            if(min_budget == "")
+            {
+                min_budget = null;
+            }
+            if(max_budget == "")
+            {
+                max_budget = null;
+            }
+            
+            
+            if(min_budget > max_budget)
+            {
+                alert("Maximun budget cannot be greater than minimun budget")
+                maxflag = false;
+            }
+
+            if(dflag && bugflag && maxflag)
+            {
+                formdata = {
+                            "prop_id" : null,
+                            "prop_type" : prop_type,
+                            "ava_date" : a_date,
+                            "prop_list_type" : sell_type,
+                            "location" : loc,
+                            "min_budget" : min_budget,
+                            "max_budget" : max_budget
+                            }
+                    console.log(formdata)
+
+                $.ajax({
+                    method: "POST",
+                    url: "/getFilteredProperty",
+                    data: JSON.stringify(formdata),
+                    contentType: "application/json",
+                    success: function (response) {
+                        var resData = response.data;
+                        if(resData.length == 0)
+                        {
+                            $('#itemBody').html(`<h2 class="text-center mt-3">No Property found</h2>`)
+                        }else
+                        {
+                            loadData(resData)
+                        }
+                        // console.log(resData)
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+            }
+        }
+
+
+    </script>
+
+
+
+</head>
+<body id="homebody" onload="bodyLoad()">
+    <div class="navbar navbar-expand-lg bg-success p-3">
+        <div class="container-fluid">
+            <button class="navbar-toggler navbar-dark" data-bs-toggle="collapse" data-bs-target="#menulst">
+                <span class="bi navbar-toggler-icon"></span>
+            </button>
+            <a href="#" class="navbar-brand ms-3 me-5 text-white">Brij Agency</a>
+            <div class="collapse navbar-collapse justify-content-between" id="menulst">
+                <div class="d-flex">
+                    <a href="#" class="nav-link text-white me-5">Home</span></a>
+
+                    <a href="./paymentPage.html" id="Payments" class="nav-link text-white me-5">Manage Payments</span></a>
+
+                    <a href="./profilePage.html" class="nav-link text-white me-5">Manage Profile</span></a>
+                    
+                    <a href="./propertyPage.html" id="prop_otp" class="nav-link text-white me-5">Manage Property</span></a>
+
+                </div>
+                <div class="d-flex">
+                    <p class="nav-item  me-5 text-white" id="name"></p>
+                    <a href="#" id="bookings" onclick="loadBookings()" data-bs-toggle="modal" data-bs-target="#bookingModal" class="nav-link text-white me-5">My Bookings</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mt-3 p-2">
+        <div class="table">
+            <div class="row">
+                <div class="shadow col-3 p-3">
+                    <tr>
+                        <td>Search by ID: </td>
+                    </tr>
+                    <tr>
+                        <td><input type="number" class="form-control mt-2" id="prop_id"></td>
+                    </tr>
+                    <tr>
+                        <td><button class="btn bg-success text-white my-2 w-25" onclick="SearchByID()">Search</button></td>
+                    </tr>
+                    <br><br>
+                    <tr>
+                        <td>Select property type: </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <select name="prop_type" id="prop_type" class="form-select my-2">
+                                <option value="all">All</option>
+                                <option value="House">House</option>
+                                <option value="Apartment">Apartment</option>
+                                <option value="Commercial building">Commercial building</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Choose Date: </td>
+                    </tr>
+                    <tr>
+                        <td><input type="date" class="form-control my-2" id="date"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Select Selling type: </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <select name="sell_type" id="sell_type" class="form-select my-2">
+                                <option value="rent">Rent</option>
+                                <option value="sale">Sale</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Choose location: </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <select name="loc" id="loc" class="form-select my-2">
+                                <option value="all">All</option>
+                                <option value="chicago">Chicago</option>
+                                <option value="atlanta">Atlanta</option>
+                                <option value="miami">Miami</option>
+                            </select>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Choose Budget Range: </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex">
+                                <input type="number" class="form-control me-2" id="min_budget">
+                                <h4>-</h4>
+                                <input type="number" class="form-control ms-2" id="max_budget">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button class="btn bg-success text-white my-2 w-25" onclick="SearchByFilter()">Search</button></td>
+                    </tr>
+                    
+                   
+                </div>
+                <div class="col-9">
+                    <div class="scrollable" id="itemBody">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="cartModal">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h3>Your Cart</h3>
+                    <button class="btn btn-close btn-close-white" data-bs-toggle="modal"></button>
+                </div>
+                <div class="modal-body" id="cartbody">
+                    
+                </div>
+
+                <div class="m-3">
+                    <div class="row my-2">
+                        <div class="col-4">
+                            <h5>Choose starting date: </h5>
+                        </div>
+                        <div class="col-8">
+                            <input type="date" class="form-control me-2" id="start_date">
+                        </div>
+                    </div>
+
+                    <div class="row my-2">
+                        <div class="col-4">
+                            <h5>Choose end date:  </h5>
+                        </div>
+                        <div class="col-8">
+                            <input type="date" class="form-control me-2" id="end_date">
+                        </div>
+                    </div>
+
+                    <div class="row my-2">
+                        <div class="col-4">
+                            <h5>Rental period:  </h5>
+                        </div>
+                        <div class="col-8">
+                            <input type="text" class="form-control me-2" id="rent_period">
+                        </div>
+                    </div>
+
+                    <div class="row my-2">
+                        <div class="col-4">
+                            <h5>Select Card for payment: </h5>
+                        </div>
+                        <div class="col-8">
+                            <select id="cardlst" class="form-select">
+                               
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="postOrders()" id="checkoutbtn" data-bs-toggle="modal">Check Out</button>
+                    <button class="btn btn-danger" data-bs-toggle="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="bookingModal">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h3>Your Bookings</h3>
+                    <button class="btn btn-close btn-close-white" data-bs-toggle="modal"></button>
+                </div>
+                <div class="modal-body" id="bookingBody">
+                    
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-danger" data-bs-toggle="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

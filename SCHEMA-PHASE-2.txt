@@ -1,0 +1,150 @@
+CREATE TABLE ADDRESS (
+  address_id SERIAL PRIMARY KEY,
+  unit_number INT NOT NULL,
+  street_number INT NOT NULL,
+  street_name VARCHAR(255) NOT NULL,
+  city VARCHAR(255) NOT NULL,
+  country VARCHAR(255) NOT NULL,
+  zipcode VARCHAR(255) NOT NULL,
+  CONSTRAINT unique_address UNIQUE (unit_number, street_number, street_name, city, country, zipcode)
+);
+
+
+
+CREATE TABLE BILLING_ADDRESS (
+  baddress_id SERIAL PRIMARY KEY,
+  line1 VARCHAR(255) NOT NULL,
+  line2 VARCHAR(255),
+  city VARCHAR(255) NOT NULL,
+  state VARCHAR(255) NOT NULL,
+  country VARCHAR(255) NOT NULL,
+  zipcode VARCHAR(255) NOT NULL
+);
+
+
+
+
+CREATE TABLE USERS (
+  user_id SERIAL PRIMARY KEY,
+  first_name VARCHAR(255) NOT NULL,
+  middle_name VARCHAR(255) DEFAULT '',
+  last_name VARCHAR(255) NOT NULL,
+  email_address VARCHAR(255) NOT NULL UNIQUE CHECK (email_address LIKE '%_@__%.__%'),
+  mobile_number VARCHAR(10) NOT NULL CHECK (LENGTH(mobile_number) = 10),
+  user_type VARCHAR(255) NOT NULL CHECK (user_type IN ('Renter', 'Agent')),
+  password VARCHAR(255) NOT NULL,
+  CONSTRAINT chk_pass CHECK (LENGTH(password) >= 5)
+);
+
+
+
+
+
+CREATE TABLE CREDIT_CARD_INFO (
+  credit_card_number VARCHAR(255) PRIMARY KEY,
+  expiry_date DATE NOT NULL,
+  cvv VARCHAR(255) NOT NULL,
+  cardholder_name VARCHAR(255) NOT NULL,
+  user_id INT NOT NULL REFERENCES USERS(user_id),
+  baddress_id INT NOT NULL REFERENCES BILLING_ADDRESS(baddress_id),
+  CONSTRAINT chk_expiry_date CHECK (expiry_date > CURRENT_DATE),
+  CONSTRAINT chk_cvv CHECK (LENGTH(cvv) = 3)
+);
+
+
+
+
+CREATE TABLE AGENT (
+  job_title VARCHAR(255) NOT NULL,
+  years_of_experience INT NOT NULL,
+  works_for VARCHAR(255) NOT NULL,
+  user_id INT PRIMARY KEY REFERENCES USERS NOT NULL
+) 
+
+
+CREATE TABLE RENTER (
+  budget FLOAT NOT NULL,
+  preferred_location VARCHAR(255) NOT NULL,
+  move_in_date DATE NOT NULL,
+  occupation VARCHAR(255) NOT NULL,
+  user_id INT PRIMARY KEY REFERENCES USERS NOT NULL
+) 
+
+
+
+
+
+CREATE TABLE PROPERTY (
+  property_id SERIAL PRIMARY KEY,
+  property_type VARCHAR(255) NOT NULL CHECK (property_type IN ('House', 'Apartment', 'Commercial building')),
+  description  VARCHAR(500) NOT NULL,
+  availability_date DATE NOT NULL,
+  address_id INT NOT NULL REFERENCES ADDRESS(address_id),
+  property_listing_type VARCHAR(255) NOT NULL CHECK (property_listing_type IN ('rent', 'sale', 'both')),
+  rental_price DECIMAL(10, 2),
+  sale_price DECIMAL(10, 2),
+  CONSTRAINT chk_property_price CHECK (
+    (property_listing_type = 'rent' AND rental_price IS NOT NULL AND sale_price IS NULL)
+    OR (property_listing_type = 'sale' AND rental_price IS NULL AND sale_price IS NOT NULL)
+    OR (property_listing_type = 'both' AND rental_price IS NOT NULL AND sale_price IS NOT NULL)
+  )
+);
+
+
+
+
+CREATE TABLE HOUSE (
+  h_id INT PRIMARY KEY,
+  no_of_hou_bathrooms INT NOT NULL,
+  no_of_hou_bedrooms INT NOT NULL,
+  parking BOOLEAN NOT NULL,
+  hou_carpet_area INT NOT NULL,
+  property_id INT NOT NULL REFERENCES PROPERTY(property_id)
+);
+
+
+CREATE TABLE APARTMENT (
+  a_id INT PRIMARY KEY,
+  building_type VARCHAR(255) NOT NULL,
+  no_of_bedrooms INT NOT NULL,
+  no_of_bathrooms INT NOT NULL,
+  laundry_availability BOOLEAN NOT NULL,
+  carpet_area INT NOT NULL,
+  property_id INT NOT NULL REFERENCES PROPERTY(property_id)
+);
+
+
+
+
+CREATE TABLE COMMERCIAL_BUILDING (
+  c_id INT PRIMARY KEY,
+  no_of_cameras INT NOT NULL,
+  types_of_business VARCHAR(255) NOT NULL,
+  fire_alarm BOOLEAN NOT NULL,
+  burglar_alarm BOOLEAN NOT NULL,
+  property_id INT NOT NULL REFERENCES PROPERTY(property_id)
+);
+
+
+
+
+
+CREATE TABLE BOOKINGS (
+  booking_id INT PRIMARY KEY,
+  start_date DATE NOT NULL,
+  end_date DATE,
+  rental_period INT NOT NULL,
+  credit_card_number VARCHAR(255) NOT NULL,
+  property_id INT NOT NULL,
+  property_type VARCHAR(255) NOT NULL,
+  property_address VARCHAR(255) NOT NULL,
+  user_id INT NOT NULL REFERENCES RENTER(user_id)
+);
+
+
+
+
+
+
+
+

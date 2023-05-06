@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Page</title>
+
+    <!-- Boot strap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <style>
+        #propertybody{
+            font-family: 'Times New Roman', Times, serif;
+            background-color: whitesmoke;
+        }
+        #div1
+        {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 700px;
+            margin-top: 20px;
+        }
+        #div2
+        {
+            width: 800px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 40px;
+            margin: auto;
+        }
+        #colorspan{
+            color: red;
+        }   
+        .signuptable
+        {
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        $(function(){
+            $('#prop_type').change(function(){
+                var prop_type = $('#prop_type').val()
+                if(prop_type == "House")
+                {
+                    $('#house_lst').show()
+                    $('#apart_lst').hide()
+                    $('#comm_build_lst').hide()
+
+                }else if(prop_type == "Apartment")
+                {
+                    $('#house_lst').hide()
+                    $('#apart_lst').show()
+                    $('#comm_build_lst').hide()
+                }else
+                {
+                    $('#house_lst').hide()
+                    $('#apart_lst').hide()
+                    $('#comm_build_lst').show()
+                }
+            })
+
+            $('#prop_sell_type').change(function(){
+                var prop_sell_type = $('#prop_sell_type').val()
+                if(prop_sell_type == "rent")
+                {
+                    $('#saleamount').html("")
+                    $('#rentamount').html(`
+                    <td><label>Enter Rental amount: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="rental_price"></td>`)
+
+                }else if(prop_sell_type == "sale")
+                {
+                    $('#rentamount').html("")
+                    $('#saleamount').html(`
+                    <td><label>Enter Sale amount: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="sale_price"></td>`)
+                }else
+                {
+                    $('#rentamount').html(`
+                    <td><label>Enter Rental amount: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="rental_price"></td>`)
+                    $('#saleamount').html(`
+                    <td><label>Enter Sale amount: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="sale_price"></td>`)
+                }
+            })
+
+
+            $('#subbtn').click(function(){
+
+                var flag = true;
+                
+                var prop_type = $('#prop_type').val()
+                var a_date = $('#a_date').val()
+                var unit_no = $('#unit_no').val()
+                var street_no = $('#street_no').val()
+                var street_name = $('#street_name').val()
+                var city = $('#city').val()
+                var state = $('#state').val()
+                var zip = $('#zip').val()
+                var prop_sell_type = $('#prop_sell_type').val()
+                var descrip = $('#descrip').val()
+
+                var rental_price = null;
+                var sale_price = null;
+
+
+                // console.log(prop_type, a_date, unit_no, street_no, street_name, city, state, zip, prop_sell_type, descrip)
+
+                if(prop_sell_type == "rent")
+                {
+                    rental_price = $('#rental_price').val()
+                    // console.log("rent price" + rental_price)
+                }else if (prop_sell_type == "sale")
+                {
+                    sale_price = $('#sale_price').val()
+                }else
+                {
+                    rental_price = $('#rental_price').val()
+                    sale_price = $('#sale_price').val()
+                }
+
+                if(prop_type == "House")
+                {
+                    var no_of_bed = $("#no_of_bed").val()
+                    var no_of_bath = $("#no_of_bath").val()
+                    var park = $("input[type='radio'][name='park']:checked").val()
+                    var carpet_area = $("#carpet_area").val()
+
+                    // console.log(no_of_bed, no_of_bath, park, carpet_area)
+
+                }else if(prop_type == "Apartment")
+                {
+                    var build_type = $("#build_type").val()
+                    var no_of_apart_bed = $("#no_of_apart_bed").val()
+                    var no_of_apart_bath = $("#no_of_apart_bath").val()
+                    var laund = $("input[type='radio'][name='laund']:checked").val()
+                    var apart_carpet_area = $("#apart_carpet_area").val()
+                    // console.log(build_type, no_of_apart_bed, no_of_apart_bath, laund, apart_carpet_area)  
+
+                }else
+                {
+                    var camera_no = $("#camera_no").val()
+                    var bussi_type = $("#bussi_type").val()
+                    var fire = $("input[type='radio'][name='fire']:checked").val()
+                    var burglar = $("input[type='radio'][name='burglar']:checked").val()
+                    // console.log(camera_no, bussi_type, fire, burglar)
+                }
+
+                if(prop_type == "" || a_date == "" || unit_no == "" || street_no == "" || street_name == "" || city == "" || state == "" || zip == "" || prop_sell_type == "")
+                {
+                    alert("All feilds are required!")
+                    flag = false;
+                }
+
+                if(prop_sell_type == "rent" || prop_sell_type == "sale")
+                {
+                    if(rental_price == "" && sale_price == "")
+                    {
+                        alert("Please fill all valid inputs")
+                        flag = false;
+                    }
+                }else
+                {
+                    if(rental_price == "" || sale_price == "")
+                    {
+                        alert("Please fill all valid inputs")
+                        flag = false;
+                    }
+                }
+
+                if(prop_type == "House")
+                {
+                    if(no_of_bed == "" || no_of_bath == "" || park == undefined || carpet_area == "")
+                    {
+                        alert("All feilds are required!")
+                        flag = false;
+                    }
+                }else if (prop_type == "Apartment")
+                {
+                    if(build_type == "" || no_of_apart_bed == "" || no_of_apart_bath == "" || laund == undefined || apart_carpet_area == "")
+                    {
+                        alert("All feilds are required!")
+                        flag = false;
+                    }
+                }else
+                {
+                    if(camera_no == "" || bussi_type == "" || fire == undefined || burglar == undefined)
+                    {
+                        alert("All feilds are required!")
+                        flag = false;
+                    }
+                }
+
+                if(flag)
+                {
+                    var formdata = {}
+
+                    if(prop_type == "House")
+                    {
+                        formdata = {
+                            "prop_type" : prop_type,
+                            "description" : descrip,
+                            "a_date" : a_date,
+
+                            "unit_no" : unit_no,
+                            "street_no" : street_no,
+                            "street_name" : street_name,
+                            "city" : city,
+                            "state" : state,
+                            "zipcode" : zip,
+
+                            "prop_list_type" : prop_sell_type,
+                            "rent_price" : rental_price,
+                            "sale_price" : sale_price,
+
+                            "bathroom_no" : no_of_bath,
+                            "bedroom_no" : no_of_bed,
+                            "parking" : park,
+                            "carp_area" : carpet_area
+                        }
+
+                    }else if (prop_type == "Apartment")
+                    {
+                        formdata = {
+                            "prop_type" : prop_type,
+                            "description" : descrip,
+                            "a_date" : a_date,
+
+                            "unit_no" : unit_no,
+                            "street_no" : street_no,
+                            "street_name" : street_name,
+                            "city" : city,
+                            "state" : state,
+                            "zipcode" : zip,
+
+                            "prop_list_type" : prop_sell_type,
+                            "rent_price" : rental_price,
+                            "sale_price" : sale_price,
+
+                            "build_type" : build_type,
+                            "bedroom_no" : no_of_apart_bed,
+                            "bathroom_no" : no_of_apart_bath,
+                            "laundry" : laund,
+                            "carp_area" : apart_carpet_area
+                        }
+                    
+                    }else
+                    {
+                        formdata = {
+                            "prop_type" : prop_type,
+                            "description" : descrip,
+                            "a_date" : a_date,
+
+                            "unit_no" : unit_no,
+                            "street_no" : street_no,
+                            "street_name" : street_name,
+                            "city" : city,
+                            "state" : state,
+                            "zipcode" : zip,
+
+                            "prop_list_type" : prop_sell_type,
+                            "rent_price" : rental_price,
+                            "sale_price" : sale_price,
+
+                            "camera_no" : camera_no,
+                            "bussi_type" : bussi_type,
+                            "fire_alarm" : fire,
+                            "burglar_alarm" : burglar
+                        }
+                    }
+
+                    console.log(formdata)
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/addProperty",
+                        data: JSON.stringify(formdata),
+                        contentType: "application/json",
+                        success: function(response){
+                            alert("Property added successfully!")
+                        },
+                        error: function(error)
+                        {
+                            alert("Something went wrong...")
+                        }
+                    })
+                }
+                
+
+                
+            })
+
+        })
+    </script>
+
+
+</head>
+<body id="propertybody">
+    <div class="bg-success text-white text-center p-2">
+        <h2>Add Property</h2>
+    </div>
+
+
+    <!-- <div class="mt-3 mx-2">
+        <ul class="nav nav-tabs justify-content-between" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-bs-toggle="tab" href="#house">House</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#apart">Apartment</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#comm_build">Commercial Building</a>
+            </li>
+          </ul>
+    
+        <div class="tab-content">
+            <div id="house" class="tab-pane active"><br>
+              <h3>HOME</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            </div>
+            <div id="apart" class="tab-pane fade"><br>
+              <h3>Menu 1</h3>
+              <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            </div>
+            <div id="comm_build" class="tab-pane fade"><br>
+              <h3>Menu 2</h3>
+              <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+            </div>
+          </div>
+    </div> -->
+
+    <div id="div1">
+        <div id="div2" class="border rounded-4">
+            <table class="signuptable">
+                
+                <tr>
+                    <td>Select property type: <span id="colorspan">*</span></td>
+                    <td>
+                        <select name="prop_type" id="prop_type" class="form-select my-2 w-75">
+                            <option value="House">House</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Commercial building">Commercial building</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>Available from: <span id="colorspan">*</span></td>
+                    <td><input type="date" class="form-control my-2 w-75" id="a_date"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter Unit number: <span id="colorspan">*</span> </label></td>
+                    <td><input type="number" class="form-control mt-4 w-75" id="unit_no"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter Street number: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="street_no"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter Street name: <span id="colorspan">*</span> </label></td>
+                    <td><input type="text" class="form-control mt-4 w-75" id="street_name"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter City name: <span id="colorspan">*</span> </label></td>
+                    <td><input type="text" class="form-control mt-4 w-75" id="city"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter state name: <span id="colorspan">*</span> </label></td>
+                    <td><input type="text" class="form-control mt-4 w-75" id="state"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter Zipcode: <span id="colorspan">*</span> </label></td>
+                    <td><input type="text" class="form-control mt-4 w-75" id="zip"></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Select Property selling type: <span id="colorspan">*</span></label></td>
+                    <td> 
+                        <select name="prop_sell_type" id="prop_sell_type" class="form-select my-2 w-75">
+                            <option value="rent">Rent</option>
+                            <option value="sale">Sale</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="rentamount">
+                    <td><label>Enter Rental amount: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="rental_price"></td>
+                </tr>
+                <tr id="saleamount" >
+
+                </tr>
+            </table>
+
+            <table class="signuptable" id="house_lst">
+                <tr>
+                    <td><label>Enter no. of bedrooms: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="no_of_bed"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter no. of bathrooms: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="no_of_bath"></td>
+                </tr>
+                <tr>
+                    <td><label>Parking <span id="colorspan">*</span></label></td>
+                    <td class="d-flex"> 
+                        <input type="radio"  name="park" value=true class="form-check m-3">
+                        <label class="mt-3 me-5">Available</label>
+                        <input type="radio" name="park" value=false class="form-check m-3">
+                        <label class="mt-3">Not Available</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><label>Enter Carpet area: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="carpet_area"></td>
+                </tr>
+            </table>
+
+
+            <table class="signuptable" id="apart_lst" style="display: none;">
+                <tr>
+                    <td><label>Enter building type: <span id="colorspan">*</span></label></td> 
+                    <td><input type="text" class="form-control mt-4 w-75" id="build_type"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter no. of bedrooms: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="no_of_apart_bed"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter no. of bathrooms: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="no_of_apart_bath"></td>
+                </tr>
+                <tr>
+                    <td><label>Laundry: <span id="colorspan">*</span></label></td>
+                    <td class="d-flex"> 
+                        <input type="radio"  name="laund" value=true class="form-check m-3">
+                        <label class="mt-3 me-5">Available</label>
+                        <input type="radio" name="laund" value=false class="form-check m-3">
+                        <label class="mt-3">Not Available</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><label>Enter Carpet area: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="apart_carpet_area"></td>
+                </tr>
+            </table>
+
+
+            <table class="signuptable" id="comm_build_lst" style="display: none;">
+                <tr>
+                    <td><label>Enter no. of cameras: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="camera_no"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter bussiness type: <span id="colorspan">*</span></label></td> 
+                    <td><input type="text" class="form-control mt-4 w-75" id="bussi_type"></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Fire alarm: <span id="colorspan">*</span></label></td>
+                    <td class="d-flex"> 
+                        <input type="radio"  name="fire" value=true class="form-check m-3">
+                        <label class="mt-3 me-5">Available</label>
+                        <input type="radio" name="fire" value=false class="form-check m-3">
+                        <label class="mt-3">Not Available</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><label>Burglar alarm: <span id="colorspan">*</span></label></td>
+                    <td class="d-flex"> 
+                        <input type="radio"  name="burglar" value=true class="form-check m-3">
+                        <label class="mt-3 me-5">Available</label>
+                        <input type="radio" name="burglar" value=false class="form-check m-3">
+                        <label class="mt-3">Not Available</label>
+                    </td>
+                </tr>
+            </table>
+
+
+
+
+            <table class="signuptable ms-5">
+                <tr>
+                    <td><label>Enter some description: </label></td> 
+                    <td><textarea type="text" class="form-control mt-4 w-75" rows="4" cols="50" id="descrip"></textarea></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><p id="res"></p></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="subbtn" class="btn btn-danger m-lg-3">Submit</button></td>                        
+                </tr>
+            </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

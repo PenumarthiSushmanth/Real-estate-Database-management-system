@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+
+    <!-- Boot strap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        #profilebody{
+            font-family: 'Times New Roman', Times, serif;
+            background-color: whitesmoke;
+        }
+    </style>
+
+    <script>
+        $(function () {
+            var data = JSON.parse(localStorage.getItem("userdata"))
+            if (data == null) {
+                location.href = "./loginPage.html"
+            } else {
+                console.log(data)
+                $("#proimg").attr("src", "./assets/Images/maleImg.png")
+
+
+                var fullname = data.first_name + " " + data.middle_name + " " + data.last_name;
+                $("#uname").html(fullname)
+
+                $("#utype").html(data.user_type)
+                
+                $("#cid").html(data.user_id)
+
+                $("#fname").html(data.first_name)
+                
+                $("#mname").html(data.middle_name)
+                
+                $("#lname").html(data.last_name)
+            
+                $("#phone").html(data.mobile_number)
+
+                $("#email").html(data.email_address)
+
+                $('#pass').html(data.password)
+            }
+
+            $("#signoutbtn").click(() => {
+                var ans = confirm("Are you sure want to Logout?")
+                if (ans) {
+                    localStorage.removeItem("userdata")
+                    location.reload()
+                }
+            })
+
+
+        })
+
+    </script>
+</head>
+
+<body id="profilebody">
+    <div class="bg-success text-white text-center p-2">
+        <h2>Your Profile</h2>
+    </div>
+
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        
+                        <img id="proimg" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+
+                        <h3 class="my-3" id="uname"></h3>
+                        <h5 class="my-3" id="utype"></h5>
+
+                        <div class="mt-4">
+                            <button class="btn btn-danger" id="signoutbtn"><span class="bi bi-box-arrow-left">
+                                </span>Sign out</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">ID</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0" id="cid"></p>
+                            </div>
+                        </div>
+                        <hr>
+
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">First Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0" id="fname"></p>
+                            </div>
+                        </div>
+                        <hr>
+
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Middle Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0" id="mname"></p>
+                            </div>
+                        </div>
+                        <hr>
+
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Last Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0" id="lname"></p>
+                            </div>
+                        </div>
+                        <hr>
+
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Phone</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0" id="phone"></p>
+                            </div>
+                        </div>
+                        <hr>
+
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Email</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0" id="email"></p>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Password</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0" id="pass"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

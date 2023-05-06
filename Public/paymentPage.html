@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+
+    <style>
+
+        #paymentbody{
+            font-family: 'Times New Roman', Times, serif;
+            background-color: whitesmoke;
+        }
+
+.credit-card {
+  width: 350px;
+  height: 200px;
+  background-color: #FFF;
+  border-radius: 15px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  perspective: 1000px;
+}
+
+.card-front, .card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  transition: all 0.6s ease;
+}
+
+.card-logo {
+  margin: 20px;
+  text-align: right;
+}
+
+.card-number {
+  margin: 30px 20px;
+  font-size: 22px;
+  letter-spacing: 2px;
+  font-family: monospace;
+}
+
+.card-info {
+  display: flex;
+  margin: 20px;
+  justify-content: space-between;
+}
+
+.card-holder, .card-expiry {
+  font-size: 14px;
+}
+
+.card-bar {
+  height: 40px;
+  background-color: #333;
+  margin-top: 40px;
+}
+
+.card-cvv {
+  font-size: 14px;
+  margin: 20px;
+}
+
+.card-buttons {
+    display: flex;
+    justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-buttons button {
+  margin: 5px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  height: 25%;
+  background-color: white;
+  margin-top: 70px;
+  border: none;
+  color: black;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.credit-card:hover  .card-buttons{
+  opacity: 1;
+  background-color: #444;
+
+}
+
+
+    </style>
+
+    <!-- Boot strap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+        $(function(){
+
+            var data = JSON.parse(localStorage.getItem("userdata"))
+            if (data == null) {
+                location.href = "./loginPage.html"
+            } else {
+                $('#add_card_btn').show()
+                $('#upd_card_btn').hide()
+                loadbody(data);                
+            }
+        })
+        var user_date;
+
+            function loadbody(data)
+            {
+                user_date = data;
+                    $.ajax({
+                    method: "GET",
+                    url: `/getCreditCard/${data.user_id}`,
+                    success: function (response) {
+                        var cardData = response.data;
+                        // console.log(cardData)
+                        loadCard(cardData);
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+                console.log(data)
+            }
+
+            function loadCard(cardData)
+            {
+                $('#cardBody').html("")
+                
+                if(cardData.length == 0)
+                {
+                    $('#cardBody').html("<h5 class='text-center'>No saved Cards</h5>")   
+                }else
+                {
+                    for (var item of cardData) 
+                            {
+                                var cc_num = item.credit_card_number;
+                                var last_dig = cc_num.substring(12, 16);
+                                var name = item.cardholder_name.toUpperCase()
+
+                                var mm = item.expiry_date.substring(5, 7);
+                                var yyyy = item.expiry_date.substring(0,4);
+                            $(`#cardBody`).append(`
+                            <div class="d-flex justify-content-center my-3">
+                                <div class="credit-card">
+                                    <div class="card-front">
+                                        <div class="card-number">
+                                            XXXX XXXX XXXX ${last_dig}
+                                        </div>
+                            <div class="card-info">
+                            <div class="card-holder">
+                              ${name}
+                            </div>
+                            <div class="card-expiry">
+                              ${mm}/${yyyy}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-buttons">
+                          <button class="btn" id="${cc_num}" onclick = "getCreditDetails(this)">Edit</button>
+                          <button class="btn" id="${cc_num}" onclick = "deleteCard(this)">Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                            `)
+                    }
+                }
+            }
+
+
+        function deleteCard(obj)
+        {
+            $.ajax({
+                    method: "DELETE",
+                    url: `/deleteCard/${obj.id}`,
+                    success: function (response) {
+                       alert("Card Deleted successfully!")
+                        loadbody(user_date);
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+        }
+
+        
+        function addCard()
+        {
+
+            var cc_num = $('#cc_num').val()
+            var exp_mm = $('#exp_mm').val()
+            var exp_yyyy = $('#exp_yyyy').val()
+            var cvv = $('#cvv').val()
+            var cc_name = $('#cc_name').val()
+
+            var user_id = user_date.user_id;
+
+            var line1 = $('#line1').val()
+            var line2 = $('#line2').val()
+            var city = $('#city').val()
+            var state = $('#state').val()
+            var country = $('#country').val()
+            var zipcode = $('#zip_code').val()
+            var exp_date = ""
+            var formdata = {}
+
+            // console.log(cc_num , exp_mm, exp_yyyy, cvv, cc_name, user_id, line1, line2, city, state, country, zipcode)
+
+            if(cc_num == "" || exp_mm == "", exp_yyyy == "" || cvv == "" || cc_name == "" || user_id == "" || line1 == "" || line2 == "" || city == "" || state == "" || country == "" || zipcode == "")
+            {
+                alert("All feilds are required!")
+            }
+            else
+            {
+                exp_date = `${exp_yyyy}-${exp_mm}-01`
+                formdata = {
+                    "cc_number" : cc_num,
+                    "exp_date" : exp_date,
+                    "cvv" : cvv,
+                    "cc_name" : cc_name,
+                    "user_id" : user_id,
+                    "line1" : line1,
+                    "line2" : line2,
+                    "city" : city,
+                    "state" : state,
+                    "country" : country,
+                    "zipcode" : zipcode
+                }
+                console.log(formdata)
+
+                $.ajax({
+                        type: "POST",
+                        url: "/addCreditCard",
+                        data: JSON.stringify(formdata),
+                        contentType: "application/json",
+                        success: function(response){
+                            alert("Card Added successfully!")
+                            loadbody(user_date);
+                        $('#cc_num').val("")
+                        $('#exp_mm').val("")
+                        $('#exp_yyyy').val("")
+                        $('#cvv').val("")
+                        $('#cc_name').val("")
+                        $('#line1').val("")
+                        $('#line2').val("")
+                        $('#city').val("")
+                        $('#state').val("")
+                        $('#country').val("")
+                        $('#zip_code').val("")
+                        },
+                        error: function(error)
+                        {
+                            alert("Something went wrong")
+                        }
+                    })
+            }
+        }
+    
+
+        function getCreditDetails(obj)
+        {
+            $('#add_card_btn').hide()
+            $('#upd_card_btn').show()
+            $.ajax({
+                    method: "GET",
+                    url: `/CardDetails/${obj.id}`,
+                    success: function (response) {
+                        var cardData = response.data;
+                        console.log(cardData)
+
+                        exp_mm = cardData[0].expiry_date.substring(5, 7)                       
+                        exp_yyyy = cardData[0].expiry_date.substring(0,4);
+
+                        $('#cc_num').val(cardData[0].credit_card_number)
+                        $('#cc_num').prop('disabled', true);
+
+                        $('#exp_mm').val(exp_mm)
+                        $('#exp_mm').prop('disabled', true);
+
+                        $('#exp_yyyy').val(exp_yyyy)
+                        $('#exp_yyyy').prop('disabled', true);
+
+                        $('#cvv').val(cardData[0].cvv)
+                        $('#cvv').prop('disabled', true);
+
+                        $('#cc_name').val(cardData[0].cardholder_name)
+                        $('#cc_name').prop('disabled', true);
+
+                        $('#line1').val(cardData[0].line1)
+                        $('#line2').val(cardData[0].line2)
+                        $('#city').val(cardData[0].city)
+                        $('#state').val(cardData[0].state)
+                        $('#country').val(cardData[0].country)
+                        $('#zip_code').val(cardData[0].zipcode)
+
+
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+        }
+
+
+        function updateCard()
+        {
+            var cc_num = $('#cc_num').val() 
+            var line1 = $('#line1').val()
+            var line2 = $('#line2').val()
+            var city = $('#city').val()
+            var state = $('#state').val()
+            var country = $('#country').val()
+            var zip_code = $('#zip_code').val()
+
+            var formdata = {}
+
+            if(line1 == "" || line2 == "" || city == "" || state == "" || country == "" || zip_code == "")
+            {
+                alert("All feilds are required!")
+            }
+            else
+            {
+                formdata = {
+                    "line1" : line1,
+                    "line2" : line2,
+                    "city" : city,
+                    "state" : state,
+                    "country" : country,
+                    "zipcode" : zip_code
+                    }
+
+                $.ajax({
+                    method: "PUT",
+                    url: `/modifyCard/${cc_num}`,
+                    data: JSON.stringify(formdata),
+                    contentType: "application/json",
+                    success: function (response) {
+                        alert("Details updated successfully!")
+                        loadbody(user_date);
+                        $('#add_card_btn').show()
+                        $('#upd_card_btn').hide()
+
+
+                        $('#cc_num').val("")
+                        $('#cc_num').prop('disabled', false);
+
+                        $('#exp_mm').val("")
+                        $('#exp_mm').prop('disabled', false);
+
+                        $('#exp_yyyy').val("")
+                        $('#exp_yyyy').prop('disabled', false);
+
+                        $('#cvv').val("")
+                        $('#cvv').prop('disabled', false);
+
+                        $('#cc_name').val("")
+                        $('#cc_name').prop('disabled', false);
+
+                        $('#line1').val("")
+                        $('#line2').val("")
+                        $('#city').val("")
+                        $('#state').val("")
+                        $('#country').val("")
+                        $('#zip_code').val("")
+
+
+                    },
+                    error: function (response) {
+                        alert("error")
+                    }
+                })
+
+            }
+        }
+
+
+    </script>
+</head>
+<body id="paymentbody">
+
+    <div class="bg-success text-white text-center p-2">
+        <h2>Mange Payments</h2>
+    </div>
+
+    <div class="py-5">
+        <div class="row mx-2">
+            
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="text-center">Add Credit Card</h4>
+
+                                <div class="col-12 p-3">
+
+                                    <div>
+                                        <p>Enter Credit Card number</p>
+                                        <input type="number" class="form-control" placeholder="XXXX XXXX XXXX XXXX" id="cc_num">    
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-6">
+                                            <p>Enter Expiry date</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p>Enter CVV</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6 d-flex">
+                                            <input type="number" class="form-control w-25 me-3" placeholder="MM" id="exp_mm">
+                                            <input type="number" class="form-control w-50" placeholder="YYYY" id="exp_yyyy">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="password" class="form-control" placeholder="CVV" id="cvv"> 
+                                        </div>
+                                    </div>
+
+                                    <div class="my-3">
+                                        <p>Enter Card holder name</p>
+                                        <input type="text" class="form-control" placeholder="Card holder name" id="cc_name">
+                                    </div>
+
+                                    <h3>Billing address</h3>
+
+                                    <div class="my-3">
+                                        <input type="text" class="form-control" placeholder="Enter Address Line 1" id="line1">
+                                    </div>
+
+                                    <div class="my-3">
+                                        <input type="text" class="form-control" placeholder="Enter Address Line 2" id="line2">
+                                    </div>
+
+                                    <div class="row my-3">
+                                        <div class="col-6 d-flex">
+                                        <input type="text" class="form-control" placeholder="Enter City name" id="city">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" placeholder="Enter state name" id="state"> 
+                                        </div>
+                                    </div>
+
+                                    <div class="row my-3">
+                                        <div class="col-6 d-flex">
+                                        <input type="text" class="form-control" placeholder="Enter country name" id="country">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" placeholder="Enter your zipcode" id="zip_code"> 
+                                        </div>
+                                    </div>
+
+                                    <div class="my-3 float-end">
+                                        <button class="btn btn-success" id="upd_card_btn" onclick="updateCard()">Update</button>
+                                        <button class="btn btn-success" id="add_card_btn" onclick="addCard()">Submit</button>
+                                    </div>
+
+
+                                </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 border border-1 rounded rounded-3">
+                <h3 class="text-center">Saved Cards</h3>
+                <div class="scrollable mt-3" id="cardBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

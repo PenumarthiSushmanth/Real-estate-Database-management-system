@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp Page</title>
+
+    <!-- Boot strap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <style type="text/css">
+        #loginBody
+        {
+            background-image: url('./assets/Images/loginbg.jpeg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        #div1
+        {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 700px;
+            margin-top: 50px;
+        }
+        #div2
+        {
+            width: 800px;
+            text-align: center;
+            color: white;
+            /* background-color: rgba(245, 50, 50, 0.8); */
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            margin: auto;
+        }
+        #colorspan{
+            color: red;
+        }   
+        .signuptable
+        {
+            width: 100%;
+        }
+    </style>
+
+
+<script>
+    $(function(){
+        $('input[name="utype"]').on('change', function() {
+            var utype = $('input[name="utype"]:checked').val();
+            // console.log(utype);
+            if(utype == "Agent"){
+                $('#agentlst').show()
+                $('#renterlst').hide()
+            }
+            else{
+                $('#agentlst').hide()
+                $('#renterlst').show()
+            }
+        });
+        
+        var passflag = rpassflag = eflag= flag = true;
+
+
+        $("#subbtn").click(()=>
+        {
+                var passflag = rpassflag = eflag= flag = phoneflag = true;
+                var fname = $("#fname").val()
+                var mname = $("#mname").val()
+                var lname = $("#lname").val()
+                var phonenum = $("#phonenum").val()
+                var email = $("#email").val()
+                var pass = $("#pass").val()
+                var rpass = $("#rpass").val()
+                var utype = $("input[type='radio'][name='utype']:checked").val()
+
+                // console.log(fname + mname + lname + phonenum + email + pass + rpass + utype)
+
+                if(utype == "Agent")
+                {
+                    var jobTitle = $("#jobTitle").val()
+                    var no_of_exp = $("#no_of_exp").val()
+                    var company = $("#company").val()
+                    // console.log(jobTitle + no_of_exp + company)
+                }else
+                {
+                    var budget = $("#budget").val()
+                    var pre_location = $("#pre_location").val()
+                    var date = $("#date").val()
+                    var occupation = $("#occupation").val()
+                    // console.log(budget + pre_location + date + occupation)                    
+                }
+        
+                var emailval = $("#email").val().toLowerCase()
+                if(emailval.endsWith("@gmail.com") || emailval.endsWith("@yahoo.in"))
+                {
+                    eflag=true;
+                }else
+                {
+                    eflag=false;
+                    alert("Enter valid email")
+                }
+
+            
+                if(pass.length<5)
+                {
+                    alert("Password should be minimum 5 letters")
+                    passflag=false;  
+                }else {
+                    passflag=true;
+                }
+
+                if(pass!=rpass )
+                {
+                    alert("Password not matched! Please enter again")
+                    rpassflag=false;
+                }else
+                {
+                    rpassflag=true;
+                }
+
+                if(fname=="" || lname=="" || phonenum=="" || email=="" || pass=="" || rpass=="" || utype==undefined )
+                {
+                    $('#res').text('Please fill all the required fields').css({'color':'red', 'font-weight':'bold'})
+                    flag=false;
+                }
+
+                if(utype == "Agent")
+                {
+                    if(jobTitle == "" || no_of_exp == "" || company == "")
+                    {
+                        $('#res').text('Please fill all the required fields').css({'color':'red', 'font-weight':'bold'})
+                        flag=false;
+                    }
+                }
+                else
+                {
+                    if(budget == "" || pre_location == "" || date == "" || occupation == "")
+                    {
+                        $('#res').text('Please fill all the required fields').css({'color':'red', 'font-weight':'bold'})
+                        flag=false;
+                    }
+                }
+
+                if(phonenum.length != 10)
+                {
+                    // $('#res').text('Invalid mobile number').css({'color':'red', 'font-weight':'bold'})
+                    alert("Invalid mobile number")
+                    phoneflag =false; 
+                }
+                else
+                {
+                    phoneflag=true; 
+                }
+
+                console.log(passflag+" "+rpassflag+" "+eflag+" "+phoneflag+" "+flag)
+                
+                if(passflag && rpassflag && eflag && phoneflag && flag)
+                {
+                    var formdata = {}
+                    // console.log(utype)
+                    if(utype == "Agent")
+                    {
+                        formdata = {
+                            "f_name" : fname,
+                            "m_name" : mname,
+                            "l_name" : lname,
+                            "email" : email,
+                            "phone" : phonenum,
+                            "u_type" : utype,
+                            "pass" : pass,
+                            "job_title" : jobTitle,
+                            "exp_years" : no_of_exp,
+                            "works_for" : company
+                        }
+                    }else
+                    {
+                        formdata = {
+                            "f_name" : fname,
+                            "m_name" : mname,
+                            "l_name" : lname,
+                            "email" : email,
+                            "phone" : phonenum,
+                            "u_type" : utype,
+                            "pass" : pass,
+                            "budget" : budget,
+                            "pre_location" : pre_location,
+                            "move_date" : date,
+                            "occup" : occupation
+                        }
+                    }
+                    
+                    console.log(formdata)
+                    $.ajax({
+                        type: "POST",
+                        url: "/userSignUp",
+                        data: JSON.stringify(formdata),
+                        contentType: "application/json",
+                        success: function(response){
+                            alert("Account created successfully!")
+                            location.href = "./loginPage.html"
+                        },
+                        error: function(error)
+                        {
+                            $('#res').text('Please enter the fields in given valid format').css({'color':'red', 'font-weight':'bold'})
+                        }
+                    })
+                }
+                
+        })
+
+
+    })
+</script>
+
+</head>
+<body id="loginBody">
+    <div id="div1">
+        <div id="div2" class="border rounded-4">
+            <h2 class="text-center">Sign Up form</h2>
+            <table class="signuptable">
+                <tr>
+                    <td><label>Enter your first name: <span id="colorspan">*</span></label></td>
+                    <td><input type="text" class="form-control mt-4 w-75" id="fname"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter your middle name: </label></td>
+                    <td><input type="text" class="form-control mt-4 w-75" id="mname"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter your last name: <span id="colorspan">*</span></label></td> 
+                    <td><input type="text" class="form-control mt-4 w-75" id="lname"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter your mobile number: <span id="colorspan">*</span> </label></td>
+                    <td><input type="number" class="form-control mt-4 w-75" id="phonenum"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter your email: <span id="colorspan">*</span> </label></td>
+                    <td><input type="email" class="form-control mt-4 w-75" id="email"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter your password: <span id="colorspan">*</span> </label></td>
+                    <td><input type="password" class="form-control mt-4 w-75" id="pass"></td>
+                </tr>
+                <tr>
+                    <td><label>Confirm password: <span id="colorspan">*</span> </label></td>
+                    <td><input type="password" class="form-control mt-4 w-75" id="rpass"></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Select your role: <span id="colorspan">*</span></label></td>
+                    <td class="d-flex"> 
+                        <input type="radio"  name="utype" value="Agent" class="form-check m-3">
+                        <label class="mt-3 me-5">Agent</label>
+                        <input type="radio" name="utype" value="Renter" class="form-check m-3">
+                        <label class="mt-3">Renter</label>
+                    </td>
+                </tr>
+            </table>
+            
+            <table class="signuptable" id="agentlst" style="display: none;">
+                <tr>
+                    <td><label>Enter your Job title: <span id="colorspan">*</span></label></td> 
+                    <td><input type="text" class="form-control mt-4 w-75" id="jobTitle"></td>
+                </tr>
+                <tr>
+                    <td><label>Experience: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="no_of_exp"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter your company: <span id="colorspan">*</span></label></td> 
+                    <td><input type="text" class="form-control mt-4 w-75" id="company"></td>
+                </tr>
+            </table>
+            
+            <table class="signuptable" id="renterlst" style="display: none;">
+                <tr>
+                    <td><label>Enter your budget: <span id="colorspan">*</span></label></td> 
+                    <td><input type="number" class="form-control mt-4 w-75" id="budget"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter your prefered location: <span id="colorspan">*</span></label></td> 
+                    <td><input type="text" class="form-control mt-4 w-75" id="pre_location"></td>
+                </tr>
+                <tr>
+                    <td><label>Expected date to move in: <span id="colorspan">*</span></label></td> 
+                    <td><input type="date" class="form-control mt-4 w-75" id="date"></td>
+                </tr>
+                <tr>
+                    <td><label>Enter your occupation: <span id="colorspan">*</span></label></td> 
+                    <td><input type="text" class="form-control mt-4 w-75" id="occupation"></td>
+                </tr>
+            </table>
+
+
+            <table class="signuptable">
+                <tr>
+                    <td></td>
+                    <td><p id="res"></p></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="subbtn" class="btn btn-danger m-lg-3">Submit</button></td>                        
+                </tr>
+            </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
