@@ -1,0 +1,484 @@
+{
+	"info": {
+		"_postman_id": "e3a99985-b770-4e74-bb6d-ff518e74c81c",
+		"name": "DBProject",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "indexPageRequest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4050/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCreditCardDetails",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4050/getCreditCard/1002",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"getCreditCard",
+						"1002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addCreditCard",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cc_number\" : \"45456767565678987\",\n    \"exp_date\" : \"2025-05-03\",\n    \"cvv\" : \"955\",\n    \"cc_name\" : \"madhu\",\n    \"user_id\" : 1003,\n    \"line1\" : \"2995 30th\",\n    \"line2\" : \"PS\",\n    \"city\" : \"Chicago\",\n    \"state\" : \"Illinois\",\n    \"country\" : \"USA\",\n    \"zipcode\" : \"60616\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/addCreditCard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"addCreditCard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "checkLoginDetails",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4050/checkLoginDetails/mohan@gmail.com/mohan123/Agent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"checkLoginDetails",
+						"mohan@gmail.com",
+						"mohan123",
+						"Agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AgentSignUP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"f_name\" : \"Rohith\",\n    \"m_name\" : \"reddy\",\n    \"l_name\" : \"bairi\",\n    \"email\" : \"rohith@gmail.com\",\n    \"phone\" : \"2413343653\",\n    \"u_type\" : \"Agent\",\n    \"pass\" : \"rohith123\",\n    \n    \"job_title\" : \"Executive\",\n    \"exp_years\" : 6,\n    \"works_for\" : \"Brij Agency\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/userSignUp",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"userSignUp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RenterSignUP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"f_name\" : \"naveen\",\n    \"m_name\" : \"kumar\",\n    \"l_name\" : \"immadibattuni\",\n    \"email\" : \"naveen@gmail.com\",\n    \"phone\" : \"9873463653\",\n    \"u_type\" : \"Renter\",\n    \"pass\" : \"kumar123\",\n    \n    \"budget\" : 5000,\n    \"pre_location\" : \"florida\",\n    \"move_date\" : \"2023-05-15\",\n    \"occup\" : \"police\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/userSignUp",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"userSignUp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUserDetails",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4050/getUserDetails/1003/Renter",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"getUserDetails",
+						"1003",
+						"Renter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addHouseDetails",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prop_type\" : \"House\",\n    \"description\" : \"3bhk\",\n    \"a_date\" : \"2023-06-25\",\n\n    \"unit_no\" : 600,\n    \"street_no\" : 45,\n    \"street_name\" : \"LM\",\n    \"city\" : \"atlanta\",\n    \"state\" : \"georgia\",\n    \"zipcode\" : \"64834\",\n\n    \"prop_list_type\" : \"rent\",\n    \"rent_price\" : 3000,\n    \"sale_price\" : null,\n\n    \"bathroom_no\" : 1,\n    \"bedroom_no\" : 2,\n    \"parking\" : false,\n    \"carp_area\" : 800\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/addProperty",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"addProperty"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addApartDetails",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prop_type\" : \"Apartment\",\n    \"description\" : \"3bhk\",\n    \"a_date\" : \"2023-06-25\",\n\n    \"unit_no\" : 507,\n    \"street_no\" : 43,\n    \"street_name\" : \"LM\",\n    \"city\" : \"chicago\",\n    \"state\" : \"illinois\",\n    \"zipcode\" : \"60616\",\n\n    \"prop_list_type\" : \"sale\",\n    \"rent_price\" : null,\n    \"sale_price\" : 30000,\n\n    \"build_type\" : \"mid rise\",\n    \"bedroom_no\" : 2,\n    \"bathroom_no\" : 1,\n    \"laundry\" : true,\n    \"carp_area\" : 1000\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/addProperty",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"addProperty"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addCommercialBuild",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prop_type\" : \"Commercial building\",\n    \"description\" : \"Restaurants\",\n    \"a_date\" : \"2023-05-10\",\n\n    \"unit_no\" : 412,\n    \"street_no\" : 36,\n    \"street_name\" : \"roosevolt\",\n    \"city\" : \"chicago\",\n    \"state\" : \"illinois\",\n    \"zipcode\" : \"60600\",\n\n    \"prop_list_type\" : \"rent\",\n    \"rent_price\" : 2500,\n    \"sale_price\" : null,\n\n    \"camera_no\" : 4,\n    \"bussi_type\" : \"Club\",\n    \"fire_alarm\" : true,\n    \"burglar_alarm\" : true\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/addProperty",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"addProperty"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BookingCart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"start_date\" : \"2023-06-16\",\n    \"end_date\" : \"2023-12-16\",\n    \"rental_period\" : 6,\n    \"cc_num\" : \"5566565478234537\",\n    \"prop_id\" : 5,\n    \"prop_type\" : \"House\",\n    \"prop_address\" : \"501 E 32nd ST chicago\",\n    \"user_id\" : 1010 \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/addToCart",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"addToCart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllProperties",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4050/getAllProperties",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"getAllProperties"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get property by id",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prop_id\" : 2,\n    \"prop_type\" : null,\n    \"ava_date\" : null,\n    \"prop_list_type\" : null,\n    \"location\" : null,\n    \"min_budget\" : null,\n    \"max_budget\" : null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/getFilteredProperty",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"getFilteredProperty"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetFilteredProperty",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prop_id\" : null,\n    \"prop_type\" : \"House\",\n    \"ava_date\" : null,\n    \"prop_list_type\" : \"rent\",\n    \"location\" : \"chicago\",\n    \"min_budget\" : null,\n    \"max_budget\" : null\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/getFilteredProperty",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"getFilteredProperty"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteCard",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4050/deleteCard/5566565478234537",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"deleteCard",
+						"5566565478234537"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getOneCardDetails",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4050/CardDetails/7788565478245637",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"CardDetails",
+						"7788565478245637"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modifyCard",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"line1\" : \"500 45th street\",\n    \"line2\" : \"roosevelt\",\n    \"city\" : \"dallas\",\n    \"state\" : \"texas\",\n    \"country\" : \"USA\",\n    \"zipcode\" : \"13372\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/modifyCard/7788565478245637",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"modifyCard",
+						"7788565478245637"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "checkLoginDetails",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cc_number\" : \"45456767565678987\",\n    \"exp_date\" : \"2025-05-03\",\n    \"cvv\" : \"955\",\n    \"cc_name\" : \"madhu\",\n    \"user_id\" : 1003,\n    \"line1\" : \"2995 30th\",\n    \"line2\" : \"PS\",\n    \"city\" : \"Chicago\",\n    \"state\" : \"Illinois\",\n    \"country\" : \"USA\",\n    \"zipcode\" : \"60616\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4050/mohan@gmail.com/mohan123/Agent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"mohan@gmail.com",
+						"mohan123",
+						"Agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBookings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4050/getBookings/1003",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4050",
+					"path": [
+						"getBookings",
+						"1003"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
